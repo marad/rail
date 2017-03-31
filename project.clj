@@ -1,4 +1,4 @@
-(defproject marad/rail "0.1.1"
+(defproject marad/rail "0.1.2"
   :description "Railway Oriented Programming in Clojure"
   :url "https://github.com/marad/rail"
   :license {:name "Eclipse Public License"

@@ -1,5 +1,6 @@
 (ns rail.core
-    (:require [schema.core :as s])
+    (:require [schema.core :as s]
+              [clojure.test :refer [function?]])
     (:refer-clojure :exclude [map apply]))
 
 
@@ -114,7 +115,7 @@
   [default {branch :branch v :value msgs :messages} :- Result]
   (case branch
     :success v
-    :failure (if (clojure.test/function? default)
+    :failure (if (function? default)
                (try (default)
                     (catch clojure.lang.ArityException ex
                            (default msgs)))

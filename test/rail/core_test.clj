@@ -104,7 +104,8 @@
            (is (= (get-or-default nil (succeed 42)) 42))
            (is (= (get-or-default nil (fail :foo)) nil))
            (is (= (get-or-default 42 (fail :foo)) 42))
-           (is (= (get-or-default (fn [] 42) (fail :foo)) 42))))
+           (is (= (get-or-default (fn [] 42) (fail :foo)) 42))
+           (is (= (get-or-default (fn [[msg]] msg) (fail :foo)) :foo))))
 
 (deftest test-fail-if-nil
   (testing "fail if nil"

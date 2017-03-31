@@ -111,11 +111,13 @@
 
 (s/defn get-or-default :- Value
   "Returns the value from Result or the default. Default can be function or value."
-  [default {branch :branch v :value} :- Result]
+  [default {branch :branch v :value msgs :messages} :- Result]
   (case branch
     :success v
     :failure (if (clojure.test/function? default)
-               (default)
+               (try (default)
+                    (catch clojure.lang.ArityException ex
+                           (default msgs)))
                default)))
 
 (s/defn fail-if-nil :- Result

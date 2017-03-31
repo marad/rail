@@ -57,7 +57,7 @@
   "Given function f :- Value -> Result applies it on success branch"
   [f result :- Result]
   (either #(->> %1 f (merge-messages %2))
-          #(fail %)
+          fail
           result))
 
 ;; TODO: add ability to apply multiple results
@@ -102,7 +102,7 @@
   "Given a function f :- Value, [Message] -> Result transforms success branch
   and returns a result"
   [f result :- Result]
-  (either f #(fail %) result))
+  (either f fail result))
 
 (s/defn map-messages :- Result
   "Given a function f :- Message -> Message applies function to result messages"
@@ -124,34 +124,3 @@
   (if-not (nil? value)
           (succeed value)
           (fail message)))
-
-(comment
-
-  Example fizz buzz solution with rail
-
-  (defn rule [divisor label]
-    (fn [i]
-        (if (= 0 (mod i divisor))
-          (succeed i [label])
-          (succeed i))))
-
-  (require 'clojure.string)
-  (defn show [i msgs]
-    (if (empty? msgs)
-      (succeed (str i))
-      (succeed (clojure.string/join msgs))))
-
-  (defn fizz-buzz [i]
-    (->> (succeed i)
-         (bind (rule 3 "Fizz"))
-         (bind (rule 5 "Buzz"))
-         (bind (rule 7 "Bar"))
-         (map-success show)
-         (get-or-default "")
-         ))
-
-  (->> (iterate inc 1)
-       (clojure.core/map fizz-buzz)
-       (take 16))
-
-  )

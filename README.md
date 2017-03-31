@@ -11,7 +11,10 @@ Now you can use our favourite `->>` function and not destroy your sweet lookin' 
 (require '[rail.core :as r])
 ```
 
-TODO: examples!
+For examples you can take a look into examples folder.
+
+TODO: more examples!
+
 
 ## License
 

@@ -16,12 +16,12 @@
 (deftest test-either
   (testing "applying to success branch"
            (is (= (either (fn [v msgs] (succeed (inc v) (conj msgs :test)))
-                          (fn [msgs] (fail msgs))
+                          fail
                           (succeed 42 [:msg]))
                   (succeed 43 [:msg :test])
                   )))
   (testing "applying to fail branch"
-           (is (= (either (fn [v msgs] (succeed v msgs))
+           (is (= (either succeed
                           (fn [msgs] (fail (conj msgs :test)))
                           (fail :msg)
                           )

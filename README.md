@@ -1,6 +1,6 @@
 # Rail
 
-Rail is Clojure implementation of [https://fsharpforfunandprofit.com/rop/][Railway Oriented Programming].
+Rail is Clojure implementation of [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/).
 It helps you manage your error handling functional style.
 
 Now you can use our favourite `->>` function and not worry about error handling!

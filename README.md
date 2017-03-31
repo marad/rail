@@ -1,6 +1,7 @@
 # Rail
 
 [![Clojars Project](https://img.shields.io/clojars/v/marad/rail.svg)](https://clojars.org/marad/rail)
+[![Build Status](https://travis-ci.org/marad/rail.svg?branch=master)](https://travis-ci.org/marad/rail)
 
 Rail is Clojure implementation of [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/).
 Now you can use our favourite `->>` function and not destroy your sweet lookin' code with error handling!

@@ -110,4 +110,9 @@
 (deftest test-fail-if-nil
   (testing "fail if nil"
            (is (= (fail-if-nil :foo 42) (succeed 42)))
-           (is (= (fail-if-nil :foo nil) (fail :foo)))))
+           (is (= (fail-if-nil :foo nil) (fail :foo))))
+  (testing "fail if nil with either"
+           (is (= (either (fail-if-nil :foo) fail (succeed 42 [:bar]))
+                  (succeed 42 [:bar])))
+           (is (= (either (fail-if-nil :foo) fail (succeed nil [:bar]))
+                  (fail [:bar :foo])))))

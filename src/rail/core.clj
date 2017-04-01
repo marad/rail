@@ -32,6 +32,8 @@
   ([value :- Value] (make-branch :success value []))
   ([value :- Value, messages :- [Message]] (make-branch :success value messages)))
 
+(def ok succeed)
+
 (s/defn fail :- Result
   "Create fail result."
   [message]
@@ -61,6 +63,9 @@
           fail
           result))
 
+;; Add an alias
+(def flat-map bind)
+
 ;; TODO: add ability to apply multiple results
 (s/defn apply :- Result
   "Given a function as a result applies the function on the
@@ -76,7 +81,7 @@
   [f result :- Result]
   (apply (succeed f) result))
 
-;; Add
+;; Add an alias
 (def map lift)
 
 (s/defn success-side-effect :- Result
@@ -121,9 +126,22 @@
                            (default msgs)))
                default)))
 
-(s/defn fail-if-nil :- Result
+(s/defn fail-if-nil
   "Creates a Result from a value. If value is nil fails with given message"
-  [message value]
-  (if-not (nil? value)
-          (succeed value)
-          (fail message)))
+  ([message]
+   (fn [value messages]
+       (if-not (nil? value)
+               (succeed value messages)
+               (fail (conj messages message)))))
+  ([message value]
+   (if-not (nil? value)
+           (succeed value)
+           (fail message))))
+
+(s/defn success? :- s/Bool
+  [result :- Result]
+  (= (get-branch result) :success))
+
+(s/defn fail? :- s/Bool
+  [result :- Result]
+  (= (get-branch result) :failure))

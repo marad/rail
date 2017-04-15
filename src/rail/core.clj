@@ -4,9 +4,10 @@
     (:refer-clojure :exclude [map apply]))
 
 
-(declare get-branch)
+(declare success?)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Schema
+
 
 (s/defschema Value s/Any)
 (s/defschema Message s/Any)
@@ -16,8 +17,24 @@
 (s/defschema Failure {:branch (s/eq :failure)
                       :value Value
                       :messages [Message]})
-(s/defschema Result (s/if #(= (get-branch %) :success) Success Failure))
 
+(s/defschema Result (s/if success? Success Failure))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Schema Builder
+
+(defn result-of
+  "Creates result schema with given success schema Optionally message schema may be specified."
+  ([value-schema]
+   (s/if success? (assoc Success :value value-schema) Failure))
+  ([value-schema message-schema]
+   (s/if success?
+     (assoc Success
+            :value value-schema
+            :messages [message-schema])
+     (assoc Failure
+            :messages [message-schema]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Private Parts

@@ -1,17 +1,17 @@
 (ns rail.core-test
     (:require [clojure.test :refer :all]
               [schema.core :as s]
-              [rail.core :refer :all])
+              [rail.core :as r :refer :all])
     (:refer-clojure :exclude [map apply]))
 
 (s/set-fn-validation! true)
 
 (deftest test-simple-stuff
   (testing "succeed and fail"
-           (is (= (make-branch :success 1 [2 3]) {:branch :success, :value 1, :messages [2 3]}))
-           (is (= (succeed 1) (make-branch :success 1 [])) )
-           (is (= (succeed 1 [2 3]) (make-branch :success 1 [2 3])))
-           (is (= (fail :msg) (make-branch :failure nil [:msg])))))
+           (is (= (make-branch :r/success 1 [2 3]) {:branch :r/success, :value 1, :messages [2 3]}))
+           (is (= (succeed 1) (make-branch :rail/success 1 [])) )
+           (is (= (succeed 1 [2 3]) (make-branch :rail/success 1 [2 3])))
+           (is (= (fail :msg) (make-branch :rail/failure nil [:msg])))))
 
 (deftest test-either
   (testing "applying to success branch"

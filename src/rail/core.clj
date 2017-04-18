@@ -4,17 +4,24 @@
     (:refer-clojure :exclude [map apply]))
 
 
-(declare success?)
+;;(declare success?)
+(s/defn success? :- s/Bool
+  [result]
+  (= (get-branch result) :rail/success))
+
+(s/defn fail? :- s/Bool
+  [result]
+  (= (get-branch result) :rail/failure))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Schema
 
 
 (s/defschema Value s/Any)
 (s/defschema Message s/Any)
-(s/defschema Success {:branch (s/eq :success)
+(s/defschema Success {:branch (s/eq :rail/success)
                       :value Value
                       :messages [Message]})
-(s/defschema Failure {:branch (s/eq :failure)
+(s/defschema Failure {:branch (s/eq :rail/failure)
                       :value Value
                       :messages [Message]})
 
@@ -46,8 +53,8 @@
 
 (s/defn succeed :- Result
   "Create a success result. Optionally with messages."
-  ([value :- Value] (make-branch :success value []))
-  ([value :- Value, messages :- [Message]] (make-branch :success value messages)))
+  ([value :- Value] (make-branch :rail/success value []))
+  ([value :- Value, messages :- [Message]] (make-branch :rail/success value messages)))
 
 (def ok succeed)
 
@@ -55,8 +62,8 @@
   "Create fail result."
   [message]
   (if (coll? message)
-    (make-branch :failure nil message)
-    (make-branch :failure nil [message])))
+    (make-branch :rail/failure nil message)
+    (make-branch :rail/failure nil [message])))
 
 (s/defn either :- Result
   "Applies f-success if on success branch or fFailure if on failure branch.
@@ -64,8 +71,8 @@
   fFailure takes list of Messages and returns Result"
   [f-success f-failure {:keys [branch value messages]} :- Result]
   (case branch
-    :success (f-success value messages)
-    :failure (f-failure messages)))
+    :rail/success (f-success value messages)
+    :rail/failure (f-failure messages)))
 
 (s/defn merge-messages :- Result
   "Merges additional messages to result"
@@ -86,15 +93,15 @@
 ;; TODO: add ability to apply multiple results
 (s/defn apply :- Result
   "Given a function as a result applies the function on the
-  result if both are on :success branch"
+  result if both are on :rail/success branch"
   [{f :value f-branch :branch f-msgs :messages} :- Result
    {r :value r-branch :branch r-msgs :messages} :- Result]
   (case [f-branch r-branch]
-     [:success :success] (succeed (f r) (concat f-msgs r-msgs))
+     [:rail/success :rail/success] (succeed (f r) (concat f-msgs r-msgs))
       (fail (concat f-msgs r-msgs))))
 
 (s/defn lift :- Result
-  "Given a function f :- Value -> Value applies it if on :success branch"
+  "Given a function f :- Value -> Value applies it if on :rail/success branch"
   [f result :- Result]
   (apply (succeed f) result))
 
@@ -105,7 +112,7 @@
   "Given a function f :- Value, [Message] -> Result and a Result applies the function
   to the success branch and returns result unchanged"
   [f {b :branch v :value msgs :messages :as result} :- Result]
-  (when (= b :success)
+  (when (= b :rail/success)
     (f v msgs))
   result)
 
@@ -115,7 +122,7 @@
   "Given a function f :- [Message] -> Result and a Result applies the function
   to the failure branch and returns result unchanged"
   [f {b :branch msgs :messages :as result} :- Result]
-  (when (= b :failure)
+  (when (= b :rail/failure)
     (f msgs))
   result)
 
@@ -136,8 +143,8 @@
   "Returns the value from Result or the default. Default can be function or value."
   [default {branch :branch v :value msgs :messages} :- Result]
   (case branch
-    :success v
-    :failure (if (function? default)
+    :rail/success v
+    :rail/failure (if (function? default)
                (try (default)
                     (catch clojure.lang.ArityException ex
                            (default msgs)))
@@ -155,10 +162,3 @@
            (succeed value)
            (fail message))))
 
-(s/defn success? :- s/Bool
-  [result :- Result]
-  (= (get-branch result) :success))
-
-(s/defn fail? :- s/Bool
-  [result :- Result]
-  (= (get-branch result) :failure))
